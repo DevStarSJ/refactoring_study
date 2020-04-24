@@ -63,20 +63,28 @@ function usd(aNumber) {
   }).format(aNumber / 100);
 }
 
-function renderPlainText(invoice) {
-  let result = `청구 내역 (고객명: ${invoice.customer})\n`;
+function enrichPerformance(aPerformance) {
+  return Object.assign({}, aPerformance);
+}
 
-  for (let perf of invoice.performances) {
+function renderPlainText(data) {
+  let result = `청구 내역 (고객명: ${data.customer})\n`;
+
+  for (let perf of data.performances) {
     result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
   }
 
-  result += `총액: ${usd(totalAmount(invoice))}\n`;
-  result += `적립 포인트: ${totalVolumeCredits(invoice)}점\n`;
+  result += `총액: ${usd(totalAmount(data))}\n`;
+  result += `적립 포인트: ${totalVolumeCredits(data)}점\n`;
   return result;
 }
 
 function statement(invoice) {
-  return renderPlainText(invoice);
+  const statementData = {
+    customer: invoice.customer,
+    performances: invoice.performances.map(enrichPerformance),
+  };
+  return renderPlainText(statementData);
 }
 
 exports.statement = statement;
