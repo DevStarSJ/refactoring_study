@@ -23,7 +23,6 @@ function renderPlainText(data) {
 }
 
 function statement(invoice) {
-  console.log(createStatementData);
   return renderPlainText(createStatementData(invoice));
 }
 
