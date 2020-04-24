@@ -1,15 +1,9 @@
 "use strict";
 
-const plays = require("../json/plays.json");
-
-function playFor(aPerformance) {
-  return plays[aPerformance.playID];
-}
-
 function amountFor(aPerformance) {
   let result = 0;
 
-  switch (playFor(aPerformance).type) {
+  switch (aPerformance.play.type) {
     case "tragedy": // 비극
       result = 40000;
       if (aPerformance.audience > 30) {
@@ -26,7 +20,7 @@ function amountFor(aPerformance) {
       break;
 
     default:
-      throw new Error(`알 수 없는 장르:  ${playFor(aPerformance).type}`);
+      throw new Error(`알 수 없는 장르:  ${aPerformance.play.type}`);
   }
   return result;
 }
@@ -43,7 +37,7 @@ function volumeCreditsFor(aPerformance) {
   let result = Math.max(aPerformance.audience - 30, 0);
 
   // 희극 관객 5명마다 추가 포인트를 제공한다.
-  if ("comedy" === playFor(aPerformance).type) result += Math.floor(aPerformance.audience / 5);
+  if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
   return result;
 }
 
@@ -64,14 +58,22 @@ function usd(aNumber) {
 }
 
 function enrichPerformance(aPerformance) {
-  return Object.assign({}, aPerformance);
+  const result = Object.assign({}, aPerformance);
+  result.play = playFor(aPerformance);
+
+  return result;
+
+  function playFor(aPerformance) {
+    const plays = require("../json/plays.json");
+    return plays[aPerformance.playID];
+  }
 }
 
 function renderPlainText(data) {
   let result = `청구 내역 (고객명: ${data.customer})\n`;
 
   for (let perf of data.performances) {
-    result += `  ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
+    result += `  ${perf.play.name}: ${usd(amountFor(perf))} (${perf.audience}석)\n`;
   }
 
   result += `총액: ${usd(totalAmount(data))}\n`;
