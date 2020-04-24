@@ -1,9 +1,5 @@
 "use strict";
 
-const plays = require("./plays.json");
-
-const invoices = require("./invoices.json");
-
 function statement(invoice, plays) {
   let totalAmount = 0;
   let volumnCredits = 0;
@@ -53,4 +49,4 @@ function statement(invoice, plays) {
   return result;
 }
 
-console.log(statement(invoices[0], plays));
+exports.statement = statement;
