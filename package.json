@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/DevStarSJ/refactoring_study/issues"
   },
-  "homepage": "https://github.com/DevStarSJ/refactoring_study#readme"
+  "homepage": "https://github.com/DevStarSJ/refactoring_study#readme",
+  "prettier": {
+    "printWidth": 100
+  }
 }
