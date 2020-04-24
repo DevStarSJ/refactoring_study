@@ -31,12 +31,20 @@ function amountFor(aPerformance) {
   return result;
 }
 
-function volumnCreditsFor(aPerformance) {
+function volumeCreditsFor(aPerformance) {
   let result = Math.max(aPerformance.audience - 30, 0);
 
   // 희극 관객 5명마다 추가 포인트를 제공한다.
   if ("comedy" === playFor(aPerformance).type) result += Math.floor(aPerformance.audience / 5);
   return result;
+}
+
+function totalVolumeCredits(invoice) {
+  let volumeCredits = 0;
+  for (let perf of invoice.performances) {
+    volumeCredits += volumeCreditsFor(perf);
+  }
+  return volumeCredits;
 }
 
 function usd(aNumber) {
@@ -57,13 +65,8 @@ function statement(invoice) {
     totalAmount += amountFor(perf);
   }
 
-  let volumnCredits = 0;
-  for (let perf of invoice.performances) {
-    volumnCredits += volumnCreditsFor(perf);
-  }
-
   result += `총액: ${usd(totalAmount)}\n`;
-  result += `적립 포인트: ${volumnCredits}점\n`;
+  result += `적립 포인트: ${totalVolumeCredits(invoice)}점\n`;
   return result;
 }
 
