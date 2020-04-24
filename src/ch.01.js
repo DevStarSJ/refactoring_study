@@ -1,41 +1,10 @@
 "use strict";
 
-function totalAmount(invoice) {
-  let result = 0;
-  for (let perf of invoice.performances) {
-    result += perf.amount;
-  }
-  return result;
-}
-
-function volumeCreditsFor(aPerformance) {
-  let result = Math.max(aPerformance.audience - 30, 0);
-
-  // 희극 관객 5명마다 추가 포인트를 제공한다.
-  if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
-  return result;
-}
-
-function totalVolumeCredits(invoice) {
-  let result = 0;
-  for (let perf of invoice.performances) {
-    result += volumeCreditsFor(perf);
-  }
-  return result;
-}
-
-function usd(aNumber) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(aNumber / 100);
-}
-
 function enrichPerformance(aPerformance) {
   const result = Object.assign({}, aPerformance);
   result.play = playFor(result);
   result.amount = amountFor(result);
+  result.volumeCredits = volumeCreditsFor(result);
 
   return result;
 
@@ -68,6 +37,14 @@ function enrichPerformance(aPerformance) {
     }
     return result;
   }
+
+  function volumeCreditsFor(aPerformance) {
+    let result = Math.max(aPerformance.audience - 30, 0);
+
+    // 희극 관객 5명마다 추가 포인트를 제공한다.
+    if ("comedy" === aPerformance.play.type) result += Math.floor(aPerformance.audience / 5);
+    return result;
+  }
 }
 
 function renderPlainText(data) {
@@ -80,6 +57,30 @@ function renderPlainText(data) {
   result += `총액: ${usd(totalAmount(data))}\n`;
   result += `적립 포인트: ${totalVolumeCredits(data)}점\n`;
   return result;
+
+  function totalAmount(data) {
+    let result = 0;
+    for (let perf of data.performances) {
+      result += perf.amount;
+    }
+    return result;
+  }
+
+  function totalVolumeCredits(data) {
+    let result = 0;
+    for (let perf of data.performances) {
+      result += perf.volumeCredits;
+    }
+    return result;
+  }
+
+  function usd(aNumber) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    }).format(aNumber / 100);
+  }
 }
 
 function statement(invoice) {
