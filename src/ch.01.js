@@ -68,20 +68,24 @@ function renderPlainText(data) {
 }
 
 function statement(invoice) {
-  const statementData = {
-    customer: invoice.customer,
-    performances: invoice.performances.map(enrichPerformance),
-  };
-  statementData.totalAmount = totalAmount(statementData);
-  statementData.totalVolumeCredits = totalVolumeCredits(statementData);
-  return renderPlainText(statementData);
+  return renderPlainText(createStatementData(invoice));
 
-  function totalAmount(data) {
-    return data.performances.reduce((total, p) => total + p.amount, 0);
-  }
+  function createStatementData(invoice) {
+    const result = {
+      customer: invoice.customer,
+      performances: invoice.performances.map(enrichPerformance),
+    };
+    result.totalAmount = totalAmount(result);
+    result.totalVolumeCredits = totalVolumeCredits(result);
+    return result;
 
-  function totalVolumeCredits(data) {
-    return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
+    function totalAmount(data) {
+      return data.performances.reduce((total, p) => total + p.amount, 0);
+    }
+
+    function totalVolumeCredits(data) {
+      return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
+    }
   }
 }
 
